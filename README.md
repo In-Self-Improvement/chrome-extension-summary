@@ -35,10 +35,6 @@
 - Chrome Extension API
 - Turndown.js (HTML to Markdown 변환 라이브러리)
 
-## 라이센스
-
-MIT
-
 ## 왜 Markdown 변환이 중요한가요?
 
 웹페이지 내용을 Markdown으로 변환하면 AI 도구(예: ChatGPT, Claude)와 상호작용할 때 더 나은 결과를 얻을 수 있습니다. 아래는 동일한 질문에 대해 다른 입력 방식을 사용했을 때의 차이점입니다:
@@ -49,3 +45,7 @@ MIT
 | Markdown 형식 + 질문 | 정제된 Markdown 콘텐츠와 함께 질문 | ![Markdown 기반 응답](https://github.com/user-attachments/assets/5a867b59-5965-4fba-bff3-ce914695256c) |
 
 위 비교에서 볼 수 있듯이, Markdown 형식으로 변환된 콘텐츠를 사용할 때 AI의 응답 품질이 크게 향상됩니다. 이 확장 프로그램은 웹페이지의 핵심 내용만 추출하여 AI가 더 정확하고 관련성 높은 답변을 제공할 수 있도록 도와줍니다.
+
+## 라이센스
+
+MIT
