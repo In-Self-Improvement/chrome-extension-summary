@@ -45,7 +45,7 @@ MIT
 
 | 입력 방식            | 설명                               | 결과                                                                                                   |
 | -------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 웹페이지 링크 + 질문 | 원본 URL을 제공하고 질문           | ![링크 기반 응답](https://github.com/user-attachments/assets/5a867b59-5965-4fba-bff3-ce914695256c)     |
-| Markdown 형식 + 질문 | 정제된 Markdown 콘텐츠와 함께 질문 | ![Markdown 기반 응답](https://github.com/user-attachments/assets/ad302f12-2479-4334-847b-0f9d7c697123) |
+| 웹페이지 링크 + 질문 | 원본 URL을 제공하고 질문           | ![링크 기반 응답](https://github.com/user-attachments/assets/ad302f12-2479-4334-847b-0f9d7c697123)     |
+| Markdown 형식 + 질문 | 정제된 Markdown 콘텐츠와 함께 질문 | ![Markdown 기반 응답](https://github.com/user-attachments/assets/5a867b59-5965-4fba-bff3-ce914695256c) |
 
 위 비교에서 볼 수 있듯이, Markdown 형식으로 변환된 콘텐츠를 사용할 때 AI의 응답 품질이 크게 향상됩니다. 이 확장 프로그램은 웹페이지의 핵심 내용만 추출하여 AI가 더 정확하고 관련성 높은 답변을 제공할 수 있도록 도와줍니다.
