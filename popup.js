@@ -1,11 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
   const convertBtn = document.getElementById("convert-btn");
-  const copyBtn = document.getElementById("copy-btn");
   const markdownOutput = document.getElementById("markdown-output");
   const statusDiv = document.getElementById("status");
 
-  // 현재 페이지 변환 버튼 클릭 이벤트
+  // 페이지 로드 시 자동으로 변환 시작
+  convertAndCopy();
+
+  // 변환 및 복사 버튼 클릭 이벤트
   convertBtn.addEventListener("click", function () {
+    convertAndCopy();
+  });
+
+  // 변환 및 복사 기능을 하나로 통합한 함수
+  function convertAndCopy() {
     statusDiv.textContent = "변환 중...";
     markdownOutput.value = ""; // 이전 결과 초기화
 
@@ -56,9 +63,80 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     if (response && response.markdown) {
+                      // 요약 프롬프트 템플릿
+                      const summaryPrompt = `아래는 웹페이지의 내용을 담고 있는 Markdown 파일입니다.  
+이 내용을 아래의 포맷에 맞춰 markdown으로 전달드린 내용을 요약해주세요. 
+포맷은 아래와 같습니다. 
+내용을 줄때에는 markdown이 아닌 텍스트로 주세요.
+
+## 📝 **웹페이지 요약**
+
+### 📌 **웹페이지 제목 및 주제**  
+- **제목**: (웹페이지의 제목)
+- **주제**: (웹페이지의 주요 주제 및 목적)
+
+### 📋 **대략적인 내용 목차 및 3줄 요약**
+**목차**:
+- (주요 목차 항목들)
+
+**요약**:
+1. (첫 번째 요약 문장)
+2. (두 번째 요약 문장)
+3. (세 번째 요약 문장)
+
+### 🔍 **핵심 기능 및 내용 요약**  
+**✅ 주요 기능**: 
+- (웹페이지에서 제공하는 핵심 기능 1)
+- (웹페이지에서 제공하는 핵심 기능 2)
+
+**📚 핵심 내용**: 
+- (웹페이지에서 전달하는 주요 메시지/정보 1)
+- (웹페이지에서 전달하는 주요 메시지/정보 2)
+
+**🌟 특징적인 요소**: 
+- (특별히 눈에 띄는 요소 1 - 예: 대화형 기능, 데이터 시각화 등)
+- (특별히 눈에 띄는 요소 2)
+
+### ❓ **이 글에서 질문할만한 내용 3가지**
+1. **Q1**: (첫 번째 질문)
+2. **Q2**: (두 번째 질문)
+3. **Q3**: (세 번째 질문)
+
+\`\`\`markdown
+${response.markdown}
+\`\`\`
+`;
+
+                      // 원본 마크다운은 텍스트 영역에 표시
                       markdownOutput.value = response.markdown;
-                      statusDiv.textContent = "변환 완료!";
-                      statusDiv.className = "";
+
+                      // 프롬프트가 포함된 내용을 클립보드에 복사
+                      navigator.clipboard
+                        .writeText(summaryPrompt)
+                        .then(() => {
+                          statusDiv.textContent =
+                            "요약 프롬프트가 클립보드에 복사되었습니다!";
+                          statusDiv.className = "";
+                        })
+                        .catch((err) => {
+                          console.error("클립보드 복사 실패:", err);
+                          // 대체 방법으로 시도
+                          const tempTextarea =
+                            document.createElement("textarea");
+                          tempTextarea.value = summaryPrompt;
+                          document.body.appendChild(tempTextarea);
+                          tempTextarea.select();
+                          document.execCommand("copy");
+                          document.body.removeChild(tempTextarea);
+                          statusDiv.textContent =
+                            "요약 프롬프트가 클립보드에 복사되었습니다!";
+                          statusDiv.className = "";
+                        });
+
+                      // 2초 후 상태 메시지 지우기
+                      setTimeout(function () {
+                        statusDiv.textContent = "";
+                      }, 2000);
                     } else if (response && response.error) {
                       console.error("변환 오류:", response.error);
                       statusDiv.textContent = "변환 실패: " + response.error;
@@ -79,24 +157,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 500); // 스크립트가 로드될 시간을 주기 위해 약간의 지연 추가
       }
     );
-  });
-
-  // 복사 버튼 클릭 이벤트
-  copyBtn.addEventListener("click", function () {
-    if (!markdownOutput.value) {
-      statusDiv.textContent = "복사할 내용이 없습니다.";
-      statusDiv.className = "error";
-      return;
-    }
-
-    markdownOutput.select();
-    document.execCommand("copy");
-    statusDiv.textContent = "클립보드에 복사되었습니다!";
-    statusDiv.className = "";
-
-    // 2초 후 상태 메시지 지우기
-    setTimeout(function () {
-      statusDiv.textContent = "";
-    }, 2000);
-  });
+  }
 });

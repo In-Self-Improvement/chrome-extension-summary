@@ -28,7 +28,7 @@
       }
       .button-container {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
       }
       button {
         padding: 8px 16px;
@@ -37,6 +37,7 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        width: 100%;
       }
       button:hover {
         background-color: #3367d6;
@@ -44,6 +45,7 @@
       #status {
         margin-top: 10px;
         color: #4caf50;
+        text-align: center;
       }
       .error {
         color: #f44336;
@@ -58,8 +60,7 @@
         placeholder="변환된 Markdown이 여기에 표시됩니다."
       ></textarea>
       <div class="button-container">
-        <button id="convert-btn">현재 페이지 변환</button>
-        <button id="copy-btn">복사하기</button>
+        <button id="convert-btn">변환 및 요약 프롬프트로 복사</button>
       </div>
       <div id="status"></div>
     </div>
