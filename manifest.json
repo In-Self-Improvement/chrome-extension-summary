@@ -1,18 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "웹페이지 Markdown 변환기",
-  "version": "1.0.0",
-  "description": "현재 웹페이지의 내용을 Markdown 형식으로 변환합니다.",
-  "permissions": ["activeTab", "storage", "scripting"],
+  "name": "웹페이지 요약 도구",
+  "version": "1.0",
+  "description": "웹페이지를 Markdown으로 변환하고 요약 프롬프트를 생성합니다.",
+  "permissions": ["activeTab", "scripting", "clipboardWrite", "storage"],
+  "host_permissions": ["*://chat.openai.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://chat.openai.com/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "images/icon.svg"
   },
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
   "icons": {
+    "16": "images/icon.svg",
+    "48": "images/icon.svg",
     "128": "images/icon.svg"
   }
 }

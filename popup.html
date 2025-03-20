@@ -28,19 +28,29 @@
       }
       .button-container {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
       }
       button {
-        padding: 8px 16px;
+        padding: 8px 12px;
         background-color: #4285f4;
         color: white;
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        width: 100%;
+        transition: background-color 0.3s;
+        flex-grow: 1;
+        margin-right: 5px;
+      }
+      button:last-child {
+        margin-right: 0;
       }
       button:hover {
         background-color: #3367d6;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
       }
       #status {
         margin-top: 10px;
@@ -55,13 +65,15 @@
   <body>
     <div class="container">
       <h1>웹페이지 Markdown 변환기</h1>
+      <div class="button-container">
+        <button id="convert-btn">변환 및 복사</button>
+        <button id="copy-prompt-btn">요약 프롬프트 복사</button>
+        <button id="send-to-chatgpt-btn">ChatGPT로 전송</button>
+      </div>
       <textarea
         id="markdown-output"
         placeholder="변환된 Markdown이 여기에 표시됩니다."
       ></textarea>
-      <div class="button-container">
-        <button id="convert-btn">변환 및 요약 프롬프트로 복사</button>
-      </div>
       <div id="status"></div>
     </div>
     <script src="turndown.js"></script>
