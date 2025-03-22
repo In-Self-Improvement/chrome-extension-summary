@@ -3,13 +3,20 @@
   "name": "웹페이지 요약 도구",
   "version": "1.0",
   "description": "웹페이지를 Markdown으로 변환하고 요약 프롬프트를 생성합니다.",
-  "permissions": ["activeTab", "scripting", "clipboardWrite", "storage"],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardWrite",
+    "storage",
+    "tabs"
+  ],
   "host_permissions": ["*://chat.openai.com/*"],
   "content_scripts": [
     {
       "matches": ["*://chat.openai.com/*"],
       "js": ["content_script.js"],
-      "run_at": "document_idle"
+      "run_at": "document_end",
+      "all_frames": false
     }
   ],
   "action": {
@@ -23,5 +30,11 @@
     "16": "images/icon.svg",
     "48": "images/icon.svg",
     "128": "images/icon.svg"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["turndown.js", "content.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
