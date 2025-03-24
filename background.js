@@ -8,6 +8,10 @@ chrome.action.onClicked.addListener(async (tab) => {
   console.log("확장 프로그램 아이콘 클릭됨");
 
   try {
+    // 진행 상태 표시
+    chrome.action.setBadgeText({ text: "변환" });
+    chrome.action.setBadgeBackgroundColor({ color: "#4285f4" });
+
     // 현재 활성화된 탭의 URL 및 콘텐츠 가져오기
     const pageContent = await getPageContent();
 
@@ -22,18 +26,27 @@ chrome.action.onClicked.addListener(async (tab) => {
     // localStorage에 저장
     await saveToStorage(fullContent);
 
+    // 상태 업데이트
+    chrome.action.setBadgeText({ text: "완료" });
+    chrome.action.setBadgeBackgroundColor({ color: "#4caf50" });
+
     // ChatGPT 페이지 열기
     await openChatGPT();
+
+    // 배지 지우기
+    setTimeout(() => {
+      chrome.action.setBadgeText({ text: "" });
+    }, 2000);
   } catch (error) {
     console.error("아이콘 클릭 처리 중 오류 발생:", error);
     // 오류 알림
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: "icon48.png",
-      title: "오류 발생",
-      message:
-        "페이지 내용을 처리하는 중 문제가 발생했습니다: " + error.message,
-    });
+    chrome.action.setBadgeText({ text: "오류" });
+    chrome.action.setBadgeBackgroundColor({ color: "#f44336" });
+
+    // 배지 지우기
+    setTimeout(() => {
+      chrome.action.setBadgeText({ text: "" });
+    }, 3000);
   }
 });
 

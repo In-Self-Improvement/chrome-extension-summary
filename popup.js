@@ -63,119 +63,66 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 변환 및 복사 기능을 하나로 통합한 함수
   function convertAndCopy(callback) {
-    statusDiv.textContent = "변환 중...";
-    markdownOutput.value = ""; // 이전 결과 초기화
+    statusDiv.textContent = "페이지 변환 중...";
+    markdownOutput.value = "";
 
-    // 먼저 스크립트 삽입 요청
-    chrome.runtime.sendMessage(
-      { action: "injectTurndown" },
-      function (response) {
-        if (chrome.runtime.lastError) {
-          console.error("스크립트 삽입 오류:", chrome.runtime.lastError);
-          statusDiv.textContent =
-            "스크립트 삽입 실패: " + chrome.runtime.lastError.message;
-          statusDiv.className = "error";
-          return;
-        }
-
-        if (!response || !response.success) {
-          statusDiv.textContent =
-            "스크립트 삽입 실패: " + (response?.error || "알 수 없는 오류");
-          statusDiv.className = "error";
-          return;
-        }
-
-        // 스크립트 삽입 성공 후 변환 요청
-        setTimeout(() => {
-          chrome.tabs.query(
-            { active: true, currentWindow: true },
-            function (tabs) {
-              if (!tabs || tabs.length === 0) {
-                statusDiv.textContent = "활성화된 탭을 찾을 수 없습니다.";
-                statusDiv.className = "error";
-                return;
-              }
-
-              try {
-                chrome.tabs.sendMessage(
-                  tabs[0].id,
-                  { action: "convert" },
-                  function (response) {
-                    if (chrome.runtime.lastError) {
-                      console.error(
-                        "메시지 전송 오류:",
-                        chrome.runtime.lastError
-                      );
-                      statusDiv.textContent =
-                        "변환 실패: " + chrome.runtime.lastError.message;
-                      statusDiv.className = "error";
-                      return;
-                    }
-
-                    if (response && response.markdown) {
-                      // 원본 마크다운은 텍스트 영역에 표시
-                      markdownOutput.value = response.markdown;
-
-                      // 프롬프트가 포함된 내용을 클립보드에 복사
-                      const summaryPrompt = generateSummaryPrompt(
-                        response.markdown
-                      );
-                      navigator.clipboard
-                        .writeText(summaryPrompt)
-                        .then(() => {
-                          statusDiv.textContent =
-                            "요약 프롬프트가 클립보드에 복사되었습니다!";
-                          statusDiv.className = "";
-
-                          // 콜백 함수가 있으면 실행
-                          if (typeof callback === "function") {
-                            callback();
-                          }
-                        })
-                        .catch((err) => {
-                          console.error("클립보드 복사 실패:", err);
-                          // 대체 방법으로 시도
-                          const tempTextarea =
-                            document.createElement("textarea");
-                          tempTextarea.value = summaryPrompt;
-                          document.body.appendChild(tempTextarea);
-                          tempTextarea.select();
-                          document.execCommand("copy");
-                          document.body.removeChild(tempTextarea);
-                          statusDiv.textContent =
-                            "요약 프롬프트가 클립보드에 복사되었습니다!";
-                          statusDiv.className = "";
-
-                          // 콜백 함수가 있으면 실행
-                          if (typeof callback === "function") {
-                            callback();
-                          }
-                        });
-
-                      // 2초 후 상태 메시지 지우기
-                      setTimeout(function () {
-                        statusDiv.textContent = "";
-                      }, 2000);
-                    } else if (response && response.error) {
-                      console.error("변환 오류:", response.error);
-                      statusDiv.textContent = "변환 실패: " + response.error;
-                      statusDiv.className = "error";
-                    } else {
-                      statusDiv.textContent = "변환 실패. 다시 시도해주세요.";
-                      statusDiv.className = "error";
-                    }
-                  }
-                );
-              } catch (error) {
-                console.error("예외 발생:", error);
-                statusDiv.textContent = "오류 발생: " + error.message;
-                statusDiv.className = "error";
-              }
-            }
-          );
-        }, 500); // 스크립트가 로드될 시간을 주기 위해 약간의 지연 추가
+    // 활성 탭 정보 가져오기
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (!tabs || tabs.length === 0) {
+        statusDiv.textContent = "활성 탭을 찾을 수 없습니다.";
+        return;
       }
-    );
+
+      // 백그라운드 스크립트에게 turndown.js와 content.js 삽입 요청
+      chrome.runtime.sendMessage(
+        { action: "injectTurndown" },
+        function (response) {
+          if (chrome.runtime.lastError) {
+            console.error("메시지 전송 오류:", chrome.runtime.lastError);
+            statusDiv.textContent =
+              "스크립트 삽입 중 오류가 발생했습니다: " +
+              chrome.runtime.lastError.message;
+            return;
+          }
+
+          if (!response || !response.success) {
+            statusDiv.textContent = "스크립트 삽입에 실패했습니다.";
+            return;
+          }
+
+          // 스크립트가 삽입되었으므로 변환 요청
+          setTimeout(function () {
+            chrome.tabs.sendMessage(
+              tabs[0].id,
+              { action: "convert" },
+              function (convertResponse) {
+                if (chrome.runtime.lastError) {
+                  console.error("변환 요청 오류:", chrome.runtime.lastError);
+                  statusDiv.textContent =
+                    "페이지 변환 중 오류가 발생했습니다: " +
+                    chrome.runtime.lastError.message;
+                  return;
+                }
+
+                if (!convertResponse || !convertResponse.markdown) {
+                  statusDiv.textContent = "마크다운 변환에 실패했습니다.";
+                  return;
+                }
+
+                // 변환 성공, 결과 표시
+                markdownOutput.value = convertResponse.markdown;
+                statusDiv.textContent = "변환 완료!";
+
+                // 콜백 함수가 제공된 경우 실행
+                if (typeof callback === "function") {
+                  callback(convertResponse.markdown);
+                }
+              }
+            );
+          }, 500); // 스크립트 로딩을 위한 시간 지연
+        }
+      );
+    });
   }
 
   // 요약 프롬프트 생성 함수
