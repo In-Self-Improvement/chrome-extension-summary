@@ -279,8 +279,9 @@ ${markdown}
 
   // 간단한 요약 프롬프트 생성 함수 (ChatGPT로 전송용)
   function generateSimpleSummaryPrompt(markdown) {
+    console.log("generateSimpleSummaryPrompt", markdown);
     return `다음은 웹페이지에서 추출한 내용입니다. 이 내용을 간결하게 요약해주세요:
-
+    
 ${markdown}`;
   }
 
@@ -356,4 +357,69 @@ ${markdown}`;
       return false;
     }
   }
+
+  // 디버그 기능 추가
+  function addDebugButton() {
+    // 이미 버튼이 있으면 추가하지 않음
+    if (document.getElementById("debug-storage-btn")) return;
+
+    // 디버그 섹션 추가
+    const debugSection = document.createElement("div");
+    debugSection.style.borderTop = "1px solid #ccc";
+    debugSection.style.marginTop = "20px";
+    debugSection.style.paddingTop = "10px";
+
+    // 디버그 버튼 생성
+    const debugBtn = document.createElement("button");
+    debugBtn.id = "debug-storage-btn";
+    debugBtn.textContent = "스토리지 내용 확인";
+    debugBtn.className = "btn btn-sm btn-secondary";
+    debugBtn.style.marginRight = "10px";
+
+    // 결과 표시 영역 생성
+    const debugResult = document.createElement("pre");
+    debugResult.id = "debug-result";
+    debugResult.style.marginTop = "10px";
+    debugResult.style.padding = "8px";
+    debugResult.style.backgroundColor = "#f8f9fa";
+    debugResult.style.border = "1px solid #ddd";
+    debugResult.style.borderRadius = "4px";
+    debugResult.style.fontSize = "12px";
+    debugResult.style.maxHeight = "200px";
+    debugResult.style.overflow = "auto";
+    debugResult.style.display = "none";
+    debugResult.style.whiteSpace = "pre-wrap";
+    debugResult.style.wordBreak = "break-all";
+
+    // 클리어 버튼
+    const clearStorageBtn = document.createElement("button");
+    clearStorageBtn.id = "clear-storage-btn";
+    clearStorageBtn.textContent = "스토리지 비우기";
+    clearStorageBtn.className = "btn btn-sm btn-danger";
+
+    // 버튼 이벤트 리스너
+    debugBtn.addEventListener("click", function () {
+      chrome.storage.local.get(null, function (items) {
+        debugResult.textContent = JSON.stringify(items, null, 2);
+        debugResult.style.display = "block";
+      });
+    });
+
+    // 클리어 버튼 이벤트 리스너
+    clearStorageBtn.addEventListener("click", function () {
+      chrome.storage.local.clear(function () {
+        debugResult.textContent = "스토리지가 비워졌습니다.";
+        debugResult.style.display = "block";
+      });
+    });
+
+    // 페이지에 추가
+    debugSection.appendChild(debugBtn);
+    debugSection.appendChild(clearStorageBtn);
+    debugSection.appendChild(debugResult);
+    document.querySelector(".container").appendChild(debugSection);
+  }
+
+  // 페이지 로드 시 실행
+  addDebugButton();
 });
