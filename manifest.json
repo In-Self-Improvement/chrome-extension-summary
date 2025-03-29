@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "웹페이지 요약 도구",
+  "name": "웹페이지 GPT 요약 도구",
   "version": "0.0.1",
   "description": "웹페이지를 Markdown으로 변환하고 요약 프롬프트를 생성합니다.",
   "permissions": [
